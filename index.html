@@ -140,7 +140,7 @@ var createScene = function () {
 
 
     // Load hero character
-    BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/schinjak/WebAssets/master/", "Phone2.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
+    BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/schinjak/WebAssets/master/", "IphoneX2.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
         var hero = newMeshes[0];
 
         //Scale the model down        
@@ -151,7 +151,7 @@ var createScene = function () {
 
         var animating = true;
 
-        const anim1 = scene.getAnimationGroupByName("CubeAction.001");
+        const anim1 = scene.getAnimationGroupByName("anim1");
         anim1.stop();
         anim1.start(false);
 
