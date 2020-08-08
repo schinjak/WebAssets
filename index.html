@@ -140,14 +140,9 @@ var createScene = function () {
 
 
     // Load hero character
-    BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/schinjak/WebAssets/master/", "Phone.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
+    BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/schinjak/WebAssets/master/", "Phone2.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
         var hero = newMeshes[0];
-        var mat = new BABYLON.StandardMaterial("dog", scene);
-        mat.emissiveTexture = mat.diffuseTexture = new BABYLON.Texture("textures/plane.basis", scene);
 
-        // Apply material to a box
-        hero.material = mat;
-        
         //Scale the model down        
         hero.scaling.scaleInPlace(1);
 
@@ -156,7 +151,7 @@ var createScene = function () {
 
         var animating = true;
 
-        const anim1 = scene.getAnimationGroupByName("Anim1");
+        const anim1 = scene.getAnimationGroupByName("CubeAction.001");
         anim1.stop();
         anim1.start(false);
 
