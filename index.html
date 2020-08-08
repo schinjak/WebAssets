@@ -24,44 +24,144 @@
         <script src="https://preview.babylonjs.com/babylon.js"></script>
         <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
         <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.js"></script>
     </head>
 
    <body>
 
-    <canvas id="renderCanvas" style="width:500px; height:500px;" touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP -->
+    <canvas id="renderCanvas"  touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP -->
 
     <script>
         var canvas = document.getElementById("renderCanvas"); // Get the canvas element
         var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 
         /******* Add the create scene function ******/
+        /*
         var createScene = function () {
-
-            // Create the scene space
             var scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(255, 255, 255);
+            //Adding a light
+            var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(20, 20, 100), scene);
 
-            // Add a camera to the scene and attach it to the canvas
-            var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,5), scene);
+
+            //Adding an Arc Rotate Camera
+            var camera = new BABYLON.ArcRotateCamera("Camera", 0, 10, 10, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, false);
+
+
+             // Keyboard events
+            var inputMap = {};
+            scene.actionManager = new BABYLON.ActionManager(scene);
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+
+
+            // The first parameter can be used to specify which mesh to import. Here we import all meshes
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/schinjak/WebAssets/master/", "Phone.glb", scene, function (newMeshes) {
+                // Set the target of the camera to the first imported mesh
+                var mesh = newMeshes[0];s
+                camera.target = newMeshes[0];
+                //Get the Samba animation Group
+                const anim1 = scene.getAnimationGroupByName("anim1");
+                
+                anim1.start(true, 1.0, anim1.from, anim1.to, false);
+
+
+                
+                //Rendering loop (executed for everyframe)
+                scene.onBeforeRenderObservable.add(() => {
+                    var keydown = false;
+                    //Manage the movements of the character (e.g. position, direction)
+                    if (inputMap["w"]) {
+                        //hero.moveWithCollisions(hero.forward.scaleInPlace(heroSpeed));
+                        keydown = true;
+                        alert("ww");
+                        //anim1.stop();
+                    }
+                });
+
+            });
+
             
 
-            BABYLON.SceneLoader.LoadAssetContainer("./", "Phone.glb", scene, function (container) {
-                // Scale and position the loaded model (First mesh loaded from gltf is the root node)
-                container.meshes[0].scaling.scaleInPlace(0.1)
-                container.meshes[0].position.z = 5
-                container.meshes[0].position.y = -1
-
-                // Add loaded file to the scene
-                container.addAllToScene();
+            // Move the light with the camera
+            scene.registerBeforeRender(function () {
+                light.position = camera.position;
             });
+
 
            
 
-            // Add and manipulate meshes in the scene
-            var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
 
             return scene;
-        };
+        }
+        */
         /******* End of the create scene function ******/
+
+        
+var createScene = function () {
+
+    // Low Poly Character with Blender Tutorial of Grant Abbitt: https://www.youtube.com/user/mediagabbitt
+    // Character animations by Mixamo: https://www.mixamo.com/
+
+    engine.enableOfflineSupport = false;
+
+    // Scene and Camera
+    var scene = new BABYLON.Scene(engine);
+
+    var camera1 = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 4, 8, new BABYLON.Vector3(0, -5, 0), scene);
+    scene.activeCamera = camera1;
+
+    // Lights
+    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 0.6;
+    light.specular = BABYLON.Color3.Black();
+
+    var light2 = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(0, -0.5, -1.0), scene);
+    light2.position = new BABYLON.Vector3(0, 5, 5);
+
+
+    
+
+
+    // Keyboard events
+    var inputMap = {};
+    scene.actionManager = new BABYLON.ActionManager(scene);
+    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+        inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+    }));
+    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+        inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+    }));
+
+
+    // Load hero character
+    BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/schinjak/WebAssets/master/", "Phone.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
+        var hero = newMeshes[0];
+
+        //Scale the model down        
+        hero.scaling.scaleInPlace(0.4);
+
+        //Lock camera on the character 
+        camera1.target = hero;
+
+        //Hero character variables 
+        var animating = true;
+
+        const anim1 = scene.getAnimationGroupByName("Anim1");
+        anim1.stop();
+        anim1.start(false);
+
+
+    });
+
+    return scene;
+}
+
 
         var scene = createScene(); //Call the createScene function
 
